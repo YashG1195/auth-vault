@@ -8,7 +8,7 @@ import {
   updateProfile,
   onAuthStateChanged,
 } from 'firebase/auth'
-import { auth, googleProvider, githubProvider } from '../firebase/config'
+import { auth, googleProvider } from '../firebase/config'
 import { createUserProfile, getUserProfile } from '../services/userService'
 
 // Create the auth context
@@ -54,18 +54,6 @@ export function AuthProvider({ children }) {
     setAuthLoading(true)
     try {
       const result = await signInWithPopup(auth, googleProvider)
-      // Create profile if first time
-      await createUserProfile(result.user)
-      return result.user
-    } finally {
-      setAuthLoading(false)
-    }
-  }
-
-  async function loginWithGithub() {
-    setAuthLoading(true)
-    try {
-      const result = await signInWithPopup(auth, githubProvider)
       // Create profile if first time
       await createUserProfile(result.user)
       return result.user
@@ -125,7 +113,6 @@ export function AuthProvider({ children }) {
     signup,
     login,
     loginWithGoogle,
-    loginWithGithub,
     logout,
     resetPassword,
     updateUserDisplayName,

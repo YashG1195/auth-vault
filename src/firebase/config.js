@@ -2,7 +2,6 @@ import { initializeApp } from 'firebase/app'
 import {
   getAuth,
   GoogleAuthProvider,
-  GithubAuthProvider,
 } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
@@ -29,8 +28,6 @@ export const db = getFirestore(app)
 export const googleProvider = new GoogleAuthProvider()
 googleProvider.setCustomParameters({ prompt: 'select_account' })
 
-export const githubProvider = new GithubAuthProvider()
-githubProvider.addScope('read:user')
-githubProvider.addScope('user:email')
+
 
 export default app
