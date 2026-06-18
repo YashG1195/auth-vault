@@ -8,7 +8,7 @@ import {
   updateProfile,
   onAuthStateChanged,
 } from 'firebase/auth'
-import { auth, googleProvider } from '../firebase/config'
+import { auth, googleProvider } from '../firebase'
 import { createUserProfile, getUserProfile } from '../services/userService'
 
 // Create the auth context
