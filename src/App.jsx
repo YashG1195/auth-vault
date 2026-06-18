@@ -7,7 +7,7 @@ import PublicRoute from './components/PublicRoute'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Dashboard from './pages/Dashboard'
-import ResetPassword from './pages/ResetPassword'
+import ForgotPassword from './pages/ForgotPassword'
 import Profile from './pages/Profile'
 
 export default function App() {
@@ -19,7 +19,7 @@ export default function App() {
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
           </Route>
 
           {/* ── Protected routes (redirect to /login if not logged in) ── */}
