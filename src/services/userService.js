@@ -9,14 +9,6 @@ import { db } from '../firebase'
 
 const USERS_COLLECTION = 'users'
 
-/**
- * Creates a Firestore user profile document at users/{uid}.
- * Uses setDoc with merge:true so it's safe to call on every OAuth login
- * (only creates if not exists, won't overwrite existing data).
- *
- * @param {import('firebase/auth').User} user - Firebase Auth user object
- * @param {object} [additionalData={}] - Extra fields to store (e.g. displayName)
- */
 export async function createUserProfile(user, additionalData = {}) {
   if (!user?.uid) return null
 
@@ -42,12 +34,6 @@ export async function createUserProfile(user, additionalData = {}) {
   return getUserProfile(user.uid)
 }
 
-/**
- * Fetches a user's Firestore profile document.
- *
- * @param {string} uid - Firebase Auth user ID
- * @returns {object|null} The user profile data or null if not found
- */
 export async function getUserProfile(uid) {
   if (!uid) return null
 
@@ -61,12 +47,6 @@ export async function getUserProfile(uid) {
   return null
 }
 
-/**
- * Updates a user's Firestore profile document.
- *
- * @param {string} uid - Firebase Auth user ID
- * @param {object} data - Fields to update
- */
 export async function updateUserProfile(uid, data) {
   if (!uid) return
 
