@@ -5,8 +5,10 @@ import {
   signInWithPopup,
   signOut,
   sendPasswordResetEmail,
+  sendEmailVerification,
   updateProfile,
   onAuthStateChanged,
+  reload,
 } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase'
 import { createUserProfile, getUserProfile } from '../services/userService'
@@ -24,6 +26,12 @@ export function AuthProvider({ children }) {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password)
       await updateProfile(user, { displayName })
+      // Send verification email — non-fatal if it fails
+      try {
+        await sendEmailVerification(user)
+      } catch (verifyErr) {
+        console.warn('Verification email failed (non-fatal):', verifyErr?.code)
+      }
       // Firestore profile creation is best-effort — don't block auth if it fails
       try {
         await createUserProfile(user, { displayName })
@@ -34,6 +42,18 @@ export function AuthProvider({ children }) {
     } finally {
       setAuthLoading(false)
     }
+  }
+
+  async function sendVerificationEmail() {
+    if (!auth.currentUser) return
+    await sendEmailVerification(auth.currentUser)
+  }
+
+  async function reloadUser() {
+    if (!auth.currentUser) return
+    await reload(auth.currentUser)
+    // onAuthStateChanged won't fire on reload, so manually refresh state
+    setCurrentUser({ ...auth.currentUser })
   }
 
   async function login(email, password) {
@@ -113,6 +133,8 @@ export function AuthProvider({ children }) {
     logout,
     resetPassword,
     updateUserDisplayName,
+    sendVerificationEmail,
+    reloadUser,
     setUserProfile,
   }
 
