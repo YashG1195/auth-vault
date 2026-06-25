@@ -11,29 +11,25 @@ import {
 import { auth, googleProvider } from '../firebase'
 import { createUserProfile, getUserProfile } from '../services/userService'
 
-// Create the auth context
 const AuthContext = createContext(null)
 
-/**
- * AuthProvider wraps the entire app and exposes auth state + methods
- * via the onAuthStateChanged observer — the single source of truth.
- */
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [authLoading, setAuthLoading] = useState(false)
 
-  // ── Auth Methods ──────────────────────────────────────────────────────
-
   async function signup(email, password, displayName) {
     setAuthLoading(true)
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password)
-      // Update display name on Firebase Auth profile
       await updateProfile(user, { displayName })
-      // Create Firestore user profile document
-      await createUserProfile(user, { displayName })
+      // Firestore profile creation is best-effort — don't block auth if it fails
+      try {
+        await createUserProfile(user, { displayName })
+      } catch (profileErr) {
+        console.warn('Firestore profile creation failed (non-fatal):', profileErr?.code)
+      }
       return user
     } finally {
       setAuthLoading(false)
@@ -54,8 +50,12 @@ export function AuthProvider({ children }) {
     setAuthLoading(true)
     try {
       const result = await signInWithPopup(auth, googleProvider)
-      // Create profile if first time
-      await createUserProfile(result.user)
+      // Firestore profile creation is best-effort — don't block auth if it fails
+      try {
+        await createUserProfile(result.user)
+      } catch (profileErr) {
+        console.warn('Firestore profile creation failed (non-fatal):', profileErr?.code)
+      }
       return result.user
     } finally {
       setAuthLoading(false)
@@ -81,13 +81,11 @@ export function AuthProvider({ children }) {
     setCurrentUser({ ...currentUser, displayName })
   }
 
-  // ── Auth State Observer ───────────────────────────────────────────────
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user)
 
       if (user) {
-        // Fetch Firestore profile for additional data
         try {
           const profile = await getUserProfile(user.uid)
           setUserProfile(profile)
@@ -101,7 +99,6 @@ export function AuthProvider({ children }) {
       setLoading(false)
     })
 
-    // Cleanup listener on unmount
     return unsubscribe
   }, [])
 
@@ -121,16 +118,11 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {/* Don't render children until auth state is resolved */}
       {!loading && children}
     </AuthContext.Provider>
   )
 }
 
-/**
- * useAuth — consume AuthContext anywhere in the app.
- * Throws if used outside AuthProvider.
- */
 export function useAuth() {
   const context = useContext(AuthContext)
   if (!context) {
