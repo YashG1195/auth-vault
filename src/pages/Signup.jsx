@@ -38,7 +38,6 @@ function PasswordStrength({ password }) {
 
   return (
     <div className="mt-2 flex flex-col gap-2">
-      {/* Strength bar */}
       <div className="flex gap-1">
         {[0, 1, 2, 3].map(i => (
           <div
@@ -49,7 +48,6 @@ function PasswordStrength({ password }) {
           />
         ))}
       </div>
-      {/* Label + checks */}
       <div className="flex items-center justify-between">
         <span className={`text-xs font-medium ${
           score <= 1 ? 'text-red-400' : score === 2 ? 'text-orange-400' : score === 3 ? 'text-yellow-400' : 'text-emerald-400'
@@ -122,7 +120,6 @@ export default function Signup() {
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        {/* Display Name */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="signup-name" className="text-sm font-medium text-slate-300">
             Display name
@@ -139,7 +136,6 @@ export default function Signup() {
           />
         </div>
 
-        {/* Email */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="signup-email" className="text-sm font-medium text-slate-300">
             Email address
@@ -156,7 +152,6 @@ export default function Signup() {
           />
         </div>
 
-        {/* Password */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="signup-password" className="text-sm font-medium text-slate-300">
             Password
@@ -184,7 +179,6 @@ export default function Signup() {
           <PasswordStrength password={form.password} />
         </div>
 
-        {/* Confirm Password */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="signup-confirm" className="text-sm font-medium text-slate-300">
             Confirm password
@@ -223,7 +217,7 @@ export default function Signup() {
         Already have an account?{' '}
         <Link
           to="/login"
-          className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+          className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
         >
           Sign in
         </Link>
@@ -238,7 +232,9 @@ function getFriendlyError(code) {
     'auth/invalid-email': 'Please enter a valid email address.',
     'auth/weak-password': 'Password is too weak. Please choose a stronger one.',
     'auth/network-request-failed': 'Network error. Check your connection and try again.',
-    'auth/operation-not-allowed': 'Email/password accounts are not enabled. Contact support.',
+    'auth/operation-not-allowed': 'Email/password sign-up is not enabled. Enable it in Firebase Console under Authentication → Sign-in method.',
+    'auth/unauthorized-domain': 'This domain is not authorized. Add it in Firebase Console under Authentication → Settings → Authorized domains.',
+    'auth/invalid-api-key': 'Invalid Firebase configuration. Check your environment variables.',
   }
-  return errors[code] ?? 'An unexpected error occurred. Please try again.'
+  return errors[code] ?? `Sign-up failed (${code ?? 'unknown'}). Please try again.`
 }
