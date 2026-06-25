@@ -21,7 +21,7 @@ function ProviderBadge({ provider }) {
   const map = {
     'google.com': { label: 'Google', color: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
     'github.com': { label: 'GitHub', color: 'bg-slate-500/10 text-slate-300 border-slate-500/20' },
-    'password': { label: 'Email', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' },
+    'password': { label: 'Email', color: 'bg-sky-500/10 text-sky-400 border-sky-500/20' },
   }
   const { label, color } = map[provider] ?? { label: provider, color: 'bg-slate-500/10 text-slate-400 border-slate-500/20' }
 
@@ -62,41 +62,36 @@ export default function Dashboard() {
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-10 pb-16">
-        {/* Hero greeting */}
         <div className="animate-fade-in-up mb-10">
           <div className="flex items-center gap-4 mb-6">
-            {/* Avatar */}
             <div className="relative">
               {photoURL ? (
                 <img
                   src={photoURL}
                   alt={displayName}
-                  className="w-16 h-16 rounded-2xl object-cover ring-2 ring-indigo-500/30"
+                  className="w-16 h-16 rounded-2xl object-cover ring-2 ring-blue-500/30"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-xl font-bold">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white text-xl font-bold">
                   {initials}
                 </div>
               )}
-              {/* Online dot */}
               <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-[#0b0f1a]" />
             </div>
 
             <div>
               <h1 className="text-2xl font-bold text-white">
-                Welcome back, <span className="gradient-text">{displayName.split(' ')[0]}</span> 👋
+                Welcome back, <span className="gradient-text">{displayName.split(' ')[0]}</span>
               </h1>
               <p className="text-slate-400 text-sm mt-0.5">{email}</p>
             </div>
           </div>
 
-          {/* Quick summary text */}
           <p className="text-slate-500 text-sm">
             Your account is protected and your session is active.
           </p>
         </div>
 
-        {/* Stats grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <StatCard
             label="Signed in with"
@@ -106,7 +101,7 @@ export default function Dashboard() {
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
               </svg>
             }
-            color="bg-indigo-500/10"
+            color="bg-blue-500/10"
           />
           <StatCard
             label="Email"
@@ -117,7 +112,7 @@ export default function Dashboard() {
                 <polyline points="22,6 12,13 2,6"/>
               </svg>
             }
-            color="bg-violet-500/10"
+            color="bg-sky-500/10"
           />
           <StatCard
             label="Email verified"
@@ -144,14 +139,13 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* Action cards */}
         <div className="glass-card p-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <h2 className="text-base font-semibold text-slate-300 mb-4">Account Actions</h2>
           <div className="flex flex-wrap gap-3">
             <Link
               to="/profile"
               id="dashboard-profile-btn"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-500/20 transition-all text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 transition-all text-sm font-medium"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -182,7 +176,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Firebase Auth UID debug info */}
         <div className="mt-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           <div className="glass-card p-4 flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
