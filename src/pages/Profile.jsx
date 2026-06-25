@@ -9,7 +9,7 @@ export default function Profile() {
   const { currentUser, userProfile, setUserProfile } = useAuth()
 
   const [displayName, setDisplayName] = useState(currentUser?.displayName ?? '')
-  const [status, setStatus] = useState('idle') // idle | saving | success | error
+  const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
 
   const initials = (currentUser?.displayName || 'U').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
@@ -21,13 +21,15 @@ export default function Profile() {
     setError('')
     setStatus('saving')
     try {
-      // Update Firebase Auth profile
       await updateProfile(currentUser, { displayName: displayName.trim() })
-      // Update Firestore profile
-      const updated = await updateUserProfile(currentUser.uid, {
-        displayName: displayName.trim(),
-      })
-      setUserProfile(updated)
+      try {
+        const updated = await updateUserProfile(currentUser.uid, {
+          displayName: displayName.trim(),
+        })
+        setUserProfile(updated)
+      } catch (firestoreErr) {
+        console.warn('Firestore profile update failed (non-fatal):', firestoreErr?.code)
+      }
       setStatus('success')
       setTimeout(() => setStatus('idle'), 3000)
     } catch (err) {
@@ -43,7 +45,6 @@ export default function Profile() {
       <Navbar />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 pt-10 pb-16">
-        {/* Back link */}
         <Link
           to="/dashboard"
           className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-slate-300 transition-colors mb-8"
@@ -57,17 +58,16 @@ export default function Profile() {
         <h1 className="text-2xl font-bold text-white mb-1">Your Profile</h1>
         <p className="text-slate-500 text-sm mb-8">Manage your personal information</p>
 
-        {/* Avatar section */}
         <div className="glass-card p-6 mb-6 flex items-center gap-5 animate-fade-in-up">
           <div className="relative shrink-0">
             {currentUser?.photoURL ? (
               <img
                 src={currentUser.photoURL}
                 alt={displayName}
-                className="w-20 h-20 rounded-2xl object-cover ring-2 ring-indigo-500/30"
+                className="w-20 h-20 rounded-2xl object-cover ring-2 ring-blue-500/30"
               />
             ) : (
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white text-2xl font-bold">
                 {initials}
               </div>
             )}
@@ -81,7 +81,7 @@ export default function Profile() {
                   ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
                   : provider === 'github.com'
                   ? 'bg-slate-500/10 text-slate-300 border-slate-500/20'
-                  : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+                  : 'bg-sky-500/10 text-sky-400 border-sky-500/20'
               }`}>
                 {provider === 'google.com' ? 'Google' : provider === 'github.com' ? 'GitHub' : 'Email'}
               </span>
@@ -97,7 +97,6 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Edit form */}
         <div className="glass-card p-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-base font-semibold text-slate-300 mb-5">Edit Information</h2>
 
@@ -120,7 +119,6 @@ export default function Profile() {
           )}
 
           <form onSubmit={handleSave} className="flex flex-col gap-4">
-            {/* Display Name */}
             <div className="flex flex-col gap-1.5">
               <label htmlFor="profile-name" className="text-sm font-medium text-slate-300">
                 Display name
@@ -135,7 +133,6 @@ export default function Profile() {
               />
             </div>
 
-            {/* Email (read-only) */}
             <div className="flex flex-col gap-1.5">
               <label htmlFor="profile-email" className="text-sm font-medium text-slate-300">
                 Email address
@@ -151,7 +148,6 @@ export default function Profile() {
               />
             </div>
 
-            {/* UID (read-only) */}
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-slate-300">Firebase UID</label>
               <p className="auth-input text-slate-600 text-xs font-mono overflow-hidden text-ellipsis opacity-60 cursor-default select-all">
@@ -175,7 +171,6 @@ export default function Profile() {
           </form>
         </div>
 
-        {/* Firestore profile data */}
         {userProfile && (
           <div className="glass-card p-5 mt-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <h2 className="text-sm font-semibold text-slate-400 mb-3 flex items-center gap-2">
