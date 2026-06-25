@@ -6,7 +6,7 @@ import AuthLayout from '../components/AuthLayout'
 export default function ForgotPassword() {
   const { resetPassword } = useAuth()
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState('idle') // idle | loading | success | error
+  const [status, setStatus] = useState('idle')
   const [error, setError] = useState('')
 
   async function handleSubmit(e) {
@@ -29,7 +29,6 @@ export default function ForgotPassword() {
     >
       {status === 'success' ? (
         <div className="flex flex-col items-center gap-5 py-4 animate-fade-in-up">
-          {/* Success icon */}
           <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
               <path d="M22 2L11 13M22 2L15 22 11 13 2 9l20-7z"/>
@@ -39,14 +38,14 @@ export default function ForgotPassword() {
             <h3 className="text-lg font-semibold text-white mb-1">Check your email</h3>
             <p className="text-sm text-slate-400 leading-relaxed">
               We sent a password reset link to<br />
-              <span className="text-indigo-400 font-medium">{email}</span>
+              <span className="text-blue-400 font-medium">{email}</span>
             </p>
           </div>
           <p className="text-xs text-slate-600 text-center">
             Didn&apos;t receive it? Check your spam folder or{' '}
             <button
               onClick={() => setStatus('idle')}
-              className="text-indigo-400 hover:text-indigo-300 transition-colors"
+              className="text-blue-400 hover:text-blue-300 transition-colors"
             >
               try again
             </button>
@@ -106,7 +105,7 @@ export default function ForgotPassword() {
         Remember your password?{' '}
         <Link
           to="/login"
-          className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+          className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
         >
           Back to sign in
         </Link>
