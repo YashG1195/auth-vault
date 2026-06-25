@@ -3,7 +3,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import AuthLayout from '../components/AuthLayout'
 
-// SVG icons
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -12,7 +11,6 @@ const GoogleIcon = () => (
     <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
   </svg>
 )
-
 
 const EyeIcon = ({ open }) => open ? (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -74,7 +72,6 @@ export default function Login() {
       title="Welcome back"
       subtitle="Sign in to your Auth Vault account"
     >
-      {/* Error banner */}
       {error && (
         <div className="alert-error animate-fade-in-up">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0 mt-0.5">
@@ -84,7 +81,6 @@ export default function Login() {
         </div>
       )}
 
-      {/* Email/Password form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="login-email" className="text-sm font-medium text-slate-300">
@@ -109,7 +105,7 @@ export default function Login() {
             </label>
             <Link
               to="/forgot-password"
-              className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors font-medium"
+              className="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium"
             >
               Forgot password?
             </Link>
@@ -151,10 +147,8 @@ export default function Login() {
         </button>
       </form>
 
-      {/* Divider */}
       <div className="auth-divider my-1">or continue with</div>
 
-      {/* OAuth buttons */}
       <div className="flex flex-col gap-3">
         <button
           id="login-google-btn"
@@ -168,12 +162,11 @@ export default function Login() {
         </button>
       </div>
 
-      {/* Sign up link */}
       <p className="text-center text-sm text-slate-500">
         Don&apos;t have an account?{' '}
         <Link
           to="/signup"
-          className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
+          className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
         >
           Create one free
         </Link>
@@ -191,7 +184,11 @@ function getFriendlyError(code) {
     'auth/user-disabled': 'This account has been disabled. Contact support.',
     'auth/network-request-failed': 'Network error. Check your connection and try again.',
     'auth/popup-blocked': 'Popup was blocked. Please allow popups for this site.',
+    'auth/popup-closed-by-user': '',
     'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method.',
+    'auth/unauthorized-domain': 'This domain is not authorized. Add it in Firebase Console under Authentication → Settings → Authorized domains.',
+    'auth/operation-not-allowed': 'This sign-in method is not enabled. Enable it in Firebase Console under Authentication → Sign-in method.',
+    'auth/invalid-api-key': 'Invalid Firebase configuration. Check your environment variables.',
   }
-  return errors[code] ?? 'An unexpected error occurred. Please try again.'
+  return errors[code] ?? `Sign-in failed (${code ?? 'unknown'}). Please try again.`
 }
