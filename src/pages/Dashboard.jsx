@@ -3,6 +3,97 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Navbar from '../components/Navbar'
 
+function VerifyEmailBanner({ email, onResend, onDismiss }) {
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [checking, setChecking] = useState(false)
+  const { reloadUser, currentUser } = useAuth()
+
+  async function handleResend() {
+    setSending(true)
+    try {
+      await onResend()
+      setSent(true)
+    } catch {
+      // ignore
+    } finally {
+      setSending(false)
+    }
+  }
+
+  async function handleCheckVerified() {
+    setChecking(true)
+    try {
+      await reloadUser()
+      // After reload, currentUser.emailVerified updates — parent will re-render and hide banner
+    } finally {
+      setChecking(false)
+    }
+  }
+
+  return (
+    <div className="mx-4 sm:mx-0 mb-6 rounded-xl border border-amber-500/25 bg-amber-500/8 px-4 py-3.5 flex flex-col sm:flex-row sm:items-center gap-3 animate-fade-in-up">
+      <div className="flex items-start gap-3 flex-1 min-w-0">
+        <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center shrink-0 mt-0.5">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-amber-300">Verify your email address</p>
+          <p className="text-xs text-amber-400/70 mt-0.5 truncate">
+            We sent a link to <span className="font-medium text-amber-300">{email}</span>
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 shrink-0 pl-11 sm:pl-0">
+        {sent ? (
+          <span className="text-xs text-emerald-400 font-medium flex items-center gap-1.5">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Email sent!
+          </span>
+        ) : (
+          <button
+            onClick={handleResend}
+            disabled={sending}
+            className="text-xs text-amber-300 hover:text-amber-200 font-medium transition-colors disabled:opacity-50 flex items-center gap-1"
+          >
+            {sending ? (
+              <><span className="spinner !w-3 !h-3 !border-amber-400/30 !border-t-amber-400" /> Sending…</>
+            ) : 'Resend email'}
+          </button>
+        )}
+
+        <span className="text-amber-700 text-xs">·</span>
+
+        <button
+          onClick={handleCheckVerified}
+          disabled={checking}
+          className="text-xs text-slate-400 hover:text-slate-200 font-medium transition-colors disabled:opacity-50 flex items-center gap-1"
+        >
+          {checking ? (
+            <><span className="spinner !w-3 !h-3 !border-slate-500/30 !border-t-slate-400" /> Checking…</>
+          ) : 'I verified it'}
+        </button>
+
+        <button
+          onClick={onDismiss}
+          className="ml-1 text-slate-600 hover:text-slate-400 transition-colors"
+          aria-label="Dismiss"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function StatCard({ label, value, icon, color }) {
   return (
     <div className="glass-card p-5 flex items-center gap-4">
@@ -33,9 +124,10 @@ function ProviderBadge({ provider }) {
 }
 
 export default function Dashboard() {
-  const { currentUser, userProfile, logout, authLoading } = useAuth()
+  const { currentUser, userProfile, logout, authLoading, sendVerificationEmail } = useAuth()
   const navigate = useNavigate()
   const [loggingOut, setLoggingOut] = useState(false)
+  const [bannerDismissed, setBannerDismissed] = useState(false)
 
   async function handleLogout() {
     setLoggingOut(true)
@@ -51,6 +143,10 @@ export default function Dashboard() {
   const email = currentUser?.email ?? ''
   const photoURL = currentUser?.photoURL
   const provider = currentUser?.providerData?.[0]?.providerId ?? 'password'
+  const emailVerified = currentUser?.emailVerified
+  const isEmailProvider = provider === 'password'
+  const showVerifyBanner = isEmailProvider && !emailVerified && !bannerDismissed
+
   const joined = userProfile?.createdAt?.toDate?.()?.toLocaleDateString('en-US', {
     month: 'long', day: 'numeric', year: 'numeric'
   }) ?? 'Recently'
@@ -62,6 +158,16 @@ export default function Dashboard() {
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-10 pb-16">
+        {/* Email verification banner */}
+        {showVerifyBanner && (
+          <VerifyEmailBanner
+            email={email}
+            onResend={sendVerificationEmail}
+            onDismiss={() => setBannerDismissed(true)}
+          />
+        )}
+
+        {/* Welcome header */}
         <div className="animate-fade-in-up mb-10">
           <div className="flex items-center gap-4 mb-6">
             <div className="relative">
@@ -83,7 +189,17 @@ export default function Dashboard() {
               <h1 className="text-2xl font-bold text-white">
                 Welcome back, <span className="gradient-text">{displayName.split(' ')[0]}</span>
               </h1>
-              <p className="text-slate-400 text-sm mt-0.5">{email}</p>
+              <p className="text-slate-400 text-sm mt-0.5 flex items-center gap-2">
+                {email}
+                {emailVerified && (
+                  <span className="inline-flex items-center gap-1 text-emerald-400 text-xs font-medium">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    verified
+                  </span>
+                )}
+              </p>
             </div>
           </div>
 
@@ -92,6 +208,7 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <StatCard
             label="Signed in with"
@@ -116,13 +233,13 @@ export default function Dashboard() {
           />
           <StatCard
             label="Email verified"
-            value={currentUser?.emailVerified ? '✓ Verified' : '✗ Not verified'}
+            value={emailVerified ? '✓ Verified' : '✗ Not verified'}
             icon={
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             }
-            color={currentUser?.emailVerified ? 'bg-emerald-500/10' : 'bg-amber-500/10'}
+            color={emailVerified ? 'bg-emerald-500/10' : 'bg-amber-500/10'}
           />
           <StatCard
             label="Member since"
@@ -139,6 +256,7 @@ export default function Dashboard() {
           />
         </div>
 
+        {/* Actions */}
         <div className="glass-card p-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <h2 className="text-base font-semibold text-slate-300 mb-4">Account Actions</h2>
           <div className="flex flex-wrap gap-3">
@@ -176,6 +294,7 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* UID */}
         <div className="mt-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           <div className="glass-card p-4 flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
