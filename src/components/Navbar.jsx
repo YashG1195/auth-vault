@@ -27,15 +27,11 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full">
-      {/* Frosted glass navbar */}
       <nav className="max-w-4xl mx-auto mt-4 mx-4 sm:mx-auto rounded-2xl border border-slate-800/60 bg-[rgba(11,15,26,0.8)] backdrop-blur-xl shadow-xl shadow-black/20 px-5 py-3">
         <div className="flex items-center justify-between gap-4">
           {/* Brand */}
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-2.5 group"
-          >
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-shadow">
+          <Link to="/dashboard" className="flex items-center gap-2.5 group">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40 transition-shadow">
               <svg width="16" height="16" viewBox="0 0 32 32" fill="none">
                 <path d="M16 4L6 9V17C6 22.55 10.16 27.74 16 29C21.84 27.74 26 22.55 26 17V9L16 4Z"
                   fill="white" fillOpacity="0.2" stroke="white" strokeWidth="1.5" strokeLinejoin="round"/>
@@ -43,7 +39,7 @@ export default function Navbar() {
               </svg>
             </div>
             <span className="font-bold text-white text-sm tracking-tight">
-              Auth<span className="text-indigo-400">Vault</span>
+              Auth<span className="text-blue-400">Vault</span>
             </span>
           </Link>
 
@@ -54,7 +50,7 @@ export default function Navbar() {
               id="nav-dashboard-link"
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 isActive('/dashboard')
-                  ? 'bg-indigo-500/15 text-indigo-400'
+                  ? 'bg-blue-500/15 text-blue-400'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
@@ -65,7 +61,7 @@ export default function Navbar() {
               id="nav-profile-link"
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 isActive('/profile')
-                  ? 'bg-indigo-500/15 text-indigo-400'
+                  ? 'bg-blue-500/15 text-blue-400'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
               }`}
             >
@@ -75,7 +71,6 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
-            {/* Avatar button */}
             <button
               id="nav-avatar-btn"
               onClick={() => setMenuOpen(o => !o)}
@@ -87,7 +82,7 @@ export default function Navbar() {
                 {photoURL ? (
                   <img src={photoURL} alt={displayName} className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-sky-400 flex items-center justify-center text-white text-xs font-bold">
                     {initials}
                   </div>
                 )}
@@ -104,16 +99,13 @@ export default function Navbar() {
               </svg>
             </button>
 
-            {/* Dropdown menu */}
             {menuOpen && (
               <div className="absolute top-[4.5rem] right-4 w-52 glass-card !rounded-xl overflow-hidden shadow-2xl z-50">
-                {/* User info header */}
                 <div className="px-4 py-3 border-b border-slate-800/60">
                   <p className="text-sm font-medium text-white truncate">{displayName}</p>
                   <p className="text-xs text-slate-500 truncate">{currentUser?.email}</p>
                 </div>
 
-                {/* Menu items */}
                 <div className="py-1">
                   <Link
                     to="/dashboard"
