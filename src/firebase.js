@@ -5,7 +5,6 @@ import {
 } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
-// Firebase project config — values loaded from .env
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -15,16 +14,11 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
-// Initialize Firebase app
 const app = initializeApp(firebaseConfig)
 
-// Auth instance
 export const auth = getAuth(app)
-
-// Firestore instance
 export const db = getFirestore(app)
 
-// OAuth providers
 export const googleProvider = new GoogleAuthProvider()
 googleProvider.setCustomParameters({ prompt: 'select_account' })
 
